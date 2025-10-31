@@ -8,11 +8,11 @@ import store from '../Redux/store'
 export default function MainLayout({children}) {
   return (
     <>
-    <Provider store={store}>
+    {/* <Provider store={store}> */}
     <Header/>
     {children}
     <Footer/>
-   </Provider>
+   {/* </Provider> */}
 
     </>
   )

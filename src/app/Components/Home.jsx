@@ -1,37 +1,68 @@
 'use client'
-import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { addFile } from './Redux/docSlice';
+import React, { useRef, useState } from 'react'
 
 export default function Home() {
-    const dispatch = useDispatch();
-  const [selectFile, setSelectFile] = useState([])
-  const doc = useSelector((data)=>{
-   return data.doc.value
-  })
-    const fileChange = (e)=>{
-    setSelectFile(e.target.files[0])
-    console.log(selectFile)
-     dispatch(addFile(e.target.files[0]))
 
+  const [selectedFile, setSelectedFile] = useState('');
+  const fileInputRef = useRef();
+
+  function handleFileChange(e) {
+    console.log('Inside fileChange');
+    console.log("Uploaded File", e.target.files[0]);
+    setSelectedFile(e.target.files[0]);
 
   }
-  const handleFile = (e)=>{
+
+  async function handleOnSubmit(e) {
+    // console.log("Inside submit button handler");
     e.preventDefault();
-        console.log(selectFile)
-        console.log(doc)
+
+    const formData = new FormData();
+    // console.log("Initial Form Data Object=", formData);
+    formData.append("Username", "Rohit");
+    formData.append('file', selectedFile);
+
+    // formData.forEach((value, key) => {
+    //   console.log(key, "=", value);
+    // });
+    fileInputRef.current.value = null;
+    setSelectedFile(null);
+
+    const response = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+    console.log('Data sent',response);
+    
+
+
+
+
   }
+
+
+
 
   return (
-    <>   
-    <div className='container mx-auto h-100 mt-20 '>
-      <form action="" className='flex justify-center items-center gap-2'>
-      <input type="file" onChange={fileChange}  className='border  p-4 cursor-pointer'/>
-      <button
-      onClick={handleFile}
-      className='p-2 rounded-sm bg-emerald-700 text-white cursor-pointer'>Upload file</button>
-    </form>
-    </div>
+    <>
+      <div className='container mx-auto h-100 mt-20 border-2'>
+        <form action="" className='flex justify-center items-center gap-2 border-2'>
+          <input
+            type="file"
+            ref={fileInputRef}
+            accept=".png, .jpeg, .pdf, .txt"
+            onChange={handleFileChange}
+            className='border  p-4 cursor-pointer'
+          />
+          <button
+            type="submit"
+            onClick={handleOnSubmit}
+            className='p-2 rounded-sm bg-emerald-700 text-white cursor-pointer'
+          >
+            Upload file
+          </button>
+        </form>
+      </div>
     </>
   )
 }
